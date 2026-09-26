@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Build Kernel
-        uses: dabao1955/kernel_build_action@v1.10.4
+        uses: dabao1955/kernel_build_action@main
         with:
           kernel-url: https://github.com/${{ github.repository }}
           kernel-branch: lineage-23.2
@@ -16,5 +16,6 @@ jobs:
           arch: arm64
           aosp-clang: true
           aosp-gcc: true
-          kvm: true
+          android-version: 12
+          disable-lto: true
           anykernel3: true
