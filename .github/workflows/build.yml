@@ -7,18 +7,29 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repository
+      - name: Checkout Kernel Source
         uses: actions/checkout@v4
 
-      - name: Build Kernel
-        uses: dabao1955/kernel_build_action@main
+      - name: Set up Build Environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bc libncurses5-dev libssl-dev bison flex libelf-dev clang lld
+
+      - name: Build Kernel Image
+        run: |
+          mkdir -p out
+          make O=out ARCH=arm64 vendor/gta4xlve_defconfig
+          make -j$(nproc) O=out ARCH=arm64 CC=clang LLVM=1 KCFLAGS="-w"
+
+      - name: Package AnyKernel3
+        run: |
+          git clone https://github.com/osm0sis/AnyKernel3.git AK3
+          cp out/arch/arm64/boot/Image.gz-dtb AK3/ || cp out/arch/arm64/boot/Image.gz AK3/ || cp out/arch/arm64/boot/Image AK3/
+          cd AK3
+          zip -r9 ../AnyKernel3-KVM-gta4xlve.zip * -x .git README.md
+
+      - name: Upload Kernel Artifact
+        uses: actions/upload-artifact@v4
         with:
-          kernel-url: https://github.com/${{ github.repository }}
-          kernel-branch: lineage-23.2
-          config: vendor/gta4xlve_defconfig
-          arch: arm64
-          aosp-clang: true
-          aosp-gcc: true
-          android-version: 12
-          disable-lto: true
-          anykernel3: true
+          name: AnyKernel3-KVM
+          path: AnyKernel3-KVM-gta4xlve.zip
