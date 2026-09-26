@@ -12,7 +12,8 @@ jobs:
         with:
           kernel-url: https://github.com/${{ github.repository }}
           kernel-branch: lineage-23.2
-          config: vendor/gta4xlve.config
+          config: arch/arm64/configs/vendor/gta4xlve.config
+            
           arch: arm64
           aosp-clang: true
           aosp-clang-version: r383902
