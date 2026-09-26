@@ -13,15 +13,13 @@ jobs:
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y bc build-essential libncurses5-dev libssl-dev xz-utils git bison flex libelf-dev clang lld libxml2-utils
+          sudo apt-get install -y bc build-essential libncurses5-dev libssl-dev xz-utils git bison flex libelf-dev clang lld libxml2-utils crossbuild-essential-arm64
 
       - name: Fetch Toolchain
         run: |
-          mkdir toolchain
-          cd toolchain
-          wget https://googlesource.com
-          tar -xf clang-r418229e.tar.gz
-          echo "$(pwd)/bin" >> $GITHUB_PATH
+          # Use reliable GitHub mirrors for cross-compilation tools
+          git clone --depth=1 https://github.com toolchain-gcc
+          echo "$(pwd)/toolchain-gcc/bin" >> $GITHUB_PATH
 
       - name: Configure KVM Flags
         run: |
@@ -41,6 +39,7 @@ jobs:
           export SUBARCH=arm64
           export CC=clang
           export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=aarch64-linux-gnu-
           
           make O=out gta4xlve_defconfig
           make -j$(nproc) O=out
