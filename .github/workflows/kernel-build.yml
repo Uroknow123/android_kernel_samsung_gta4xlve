@@ -19,14 +19,12 @@ jobs:
         run: |
           mkdir toolchain
           cd toolchain
-          # Fetch official Google AOSP Clang toolchain
           wget https://googlesource.com
           tar -xf clang-r418229e.tar.gz
           echo "$(pwd)/bin" >> $GITHUB_PATH
 
       - name: Configure KVM Flags
         run: |
-          # Automatically injects KVM flags into the target defconfig before building
           DEFCONFIG_PATH="arch/arm64/configs/gta4xlve_defconfig"
           if [ -f "$DEFCONFIG_PATH" ]; then
             echo "CONFIG_KVM=y" >> $DEFCONFIG_PATH
@@ -44,7 +42,6 @@ jobs:
           export CC=clang
           export CLANG_TRIPLE=aarch64-linux-gnu-
           
-          # Initialize config and compile
           make O=out gta4xlve_defconfig
           make -j$(nproc) O=out
 
