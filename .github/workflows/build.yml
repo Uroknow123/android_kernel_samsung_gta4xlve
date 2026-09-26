@@ -18,7 +18,16 @@ jobs:
       - name: Build Kernel Image
         run: |
           mkdir -p out
-          make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- gta4xlve_defconfig
+          
+          # Find the exact gta4 config file path inside arch/arm64/configs/
+          CONFIG_FILE=$(find arch/arm64/configs/ -type f -name "*gta4*" | head -n 1)
+          echo "Found configuration file: $CONFIG_FILE"
+          
+          # Copy it as the build's target .config
+          cp "$CONFIG_FILE" out/.config
+          
+          # Process default config and build
+          make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- olddefconfig
           make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- KCFLAGS="-w"
 
       - name: Package AnyKernel3
