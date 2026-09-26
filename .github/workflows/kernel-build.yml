@@ -1,0 +1,55 @@
+name: Build Tab S6 Lite 2022 Kernel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Kernel Source
+        uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc build-essential libncurses5-dev libssl-dev xz-utils git bison flex libelf-dev clang lld libxml2-utils
+
+      - name: Fetch Toolchain
+        run: |
+          mkdir toolchain
+          cd toolchain
+          # Fetch official Google AOSP Clang toolchain
+          wget https://googlesource.com
+          tar -xf clang-r418229e.tar.gz
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+
+      - name: Configure KVM Flags
+        run: |
+          # Automatically injects KVM flags into the target defconfig before building
+          DEFCONFIG_PATH="arch/arm64/configs/gta4xlve_defconfig"
+          if [ -f "$DEFCONFIG_PATH" ]; then
+            echo "CONFIG_KVM=y" >> $DEFCONFIG_PATH
+            echo "CONFIG_VIRTUALIZATION=y" >> $DEFCONFIG_PATH
+            echo "Successfully injected KVM configs."
+          else
+            echo "Target defconfig not found! Checking alternative files..."
+            ls arch/arm64/configs/
+          fi
+
+      - name: Compile Kernel
+        run: |
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export CC=clang
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          
+          # Initialize config and compile
+          make O=out gta4xlve_defconfig
+          make -j$(nproc) O=out
+
+      - name: Upload Compiled Kernel Artifact
+        uses: actions/artifacts/v4@v4
+        with:
+          name: TabS6Lite-2022-Kernel
+          path: out/arch/arm64/boot/Image*
