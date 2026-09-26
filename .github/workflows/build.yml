@@ -5,19 +5,20 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Build Kernel
         uses: dabao1955/kernel_build_action@main
         with:
           kernel-url: https://github.com/${{ github.repository }}
           kernel-branch: lineage-23.2
-          config: arch/arm64/configs/vendor/gta4xlve.config
-            
+          config: vendor/gta4xlve.config
           arch: arm64
           aosp-clang: true
-          aosp-clang-version: r383902
           aosp-gcc: true
-          android-version: 11
+          android-version: 12
           disable-lto: true
           anykernel3: true
+          extra-cmd: '["KCFLAGS=-w"]'
