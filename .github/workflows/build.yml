@@ -6,9 +6,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    permissions:
-      contents: read
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Build Kernel
         uses: dabao1955/kernel_build_action@main
         with:
@@ -21,4 +22,3 @@ jobs:
           android-version: 12
           disable-lto: true
           anykernel3: true
-          kvm: true
