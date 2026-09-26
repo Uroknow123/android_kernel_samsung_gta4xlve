@@ -11,8 +11,10 @@ jobs:
         uses: dabao1955/kernel_build_action@v1.10.4
         with:
           kernel-url: https://github.com/${{ github.repository }}
-          branch: thirteen
+          kernel-branch: lineage-23.2
           config: vendor/gta4xlve_defconfig
           arch: arm64
           aosp-clang: true
           aosp-gcc: true
+          kvm: true
+          anykernel3: true
