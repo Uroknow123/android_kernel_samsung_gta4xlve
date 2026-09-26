@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
     steps:
@@ -14,11 +14,10 @@ jobs:
         with:
           kernel-url: https://github.com/${{ github.repository }}
           kernel-branch: lineage-23.2
-          config: gta4xlve_defconfig
+          config: vendor/gta4xlve_defconfig
           arch: arm64
           aosp-clang: true
           aosp-gcc: true
           android-version: 12
           disable-lto: true
           anykernel3: true
-          extra-cmd: '["KCFLAGS=-w"]'
